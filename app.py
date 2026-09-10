@@ -6,7 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-# 1. APP CONFIGURATION
+# APP CONFIGURATION
 
 st.set_page_config(
     page_title='Campaign Performance & ROI Predictor',
@@ -18,7 +18,7 @@ st.markdown(
     'Estimate projected **Revenue** and **Profit/Loss** status:'
 )
 
-# 2. LOAD TRAINED MODELS & COLUMN METADATA
+# LOAD TRAINED MODELS & COLUMN METADATA
 
 @st.cache_resource
 def load_artifacts():
@@ -36,7 +36,7 @@ except Exception as e:
   )
   st.stop()
 
-# 3. INPUT FORM (SIDEBAR & MAIN DASHBOARD)
+# INPUT FORM (SIDEBAR & MAIN DASHBOARD)
 
 with st.sidebar:
   st.header('🏷️ Campaign Descriptors')
@@ -127,7 +127,7 @@ with c4:
       step=0.1,
   )
 
-# 4. PREDICTION LOGIC & INFERENCE ENGINE
+# PREDICTION LOGIC & INFERENCE ENGINE
 
 if st.button('Predict Campaign Performance', type='primary', use_container_width=True):
   # Computed Spend
@@ -171,14 +171,14 @@ if st.button('Predict Campaign Performance', type='primary', use_container_width
     if col in encoded_df.columns:
       X_reg_live[col] = encoded_df[col].values[0]
 
-  # 1. Predict Revenue (Regression)
+  # Predict Revenue (Regression)
   pred_revenue = float(reg_model.predict(X_reg_live)[0])
   pred_profit = pred_revenue - total_spend
   computed_roi = (
       (pred_profit / total_spend) if total_spend > 0 else 0
   )
 
-  # 2. Predict Profit/Loss (Classification)
+  # Predict Profit/Loss (Classification)
   X_cls_live = pd.DataFrame(0, index=[0], columns=cls_columns)
   encoded_df['Revenue'] = pred_revenue
   for col in cls_columns:
@@ -188,7 +188,7 @@ if st.button('Predict Campaign Performance', type='primary', use_container_width
   pred_cls_flag = int(cls_model.predict(X_cls_live)[0])
   pred_cls_prob = float(cls_model.predict_proba(X_cls_live)[0][1])
 
-  # 5. VISUALIZATION OF RESULTS & KEY PERFORMANCE INDICATORS
+  # VISUALIZATION OF RESULTS & KEY PERFORMANCE INDICATORS
   
   st.divider()
   st.subheader('📊 Predictions & Financial Health')
