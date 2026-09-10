@@ -5,17 +5,17 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 
-# 1. Load Data
+# Load Data
 df = pd.read_csv('D:\\Python\\Multi-Brand Marketing Campaign Performance Analysis\\all_campaign_data_cleaned.csv')
 
-# 2. Extract Calendar Features
+# Extract Calendar Features
 df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
 df['Year'] = df['Date'].dt.year.fillna(2025).astype(int)
 df['Month'] = df['Date'].dt.month.fillna(6).astype(int)
 df['Day'] = df['Date'].dt.day.fillna(15).astype(int)
 df['DayOfWeek'] = df['Date'].dt.dayofweek.fillna(2).astype(int)
 
-# 3. Categorical Encodings
+# Categorical Encodings
 channel_cols = [
     'Channel_Email',
     'Channel_Facebook',
@@ -33,7 +33,7 @@ cat_cols = [
 ]
 cat_dummies = pd.get_dummies(df[cat_cols], drop_first=True, dtype=int)
 
-# 4. Feature Sets
+# Feature Sets
 # Regression Feature Set (Uses all columns including ROI, CAC, Conversions)
 reg_num_cols = [
     'Duration',
@@ -71,7 +71,7 @@ cls_num_cols = [
 X_cls = pd.concat([df[cls_num_cols + channel_cols], cat_dummies], axis=1)
 y_cls = df['Profit_Loss_Flag']
 
-# 5. Train Models
+# Train Models
 print('Training HistGradientBoostingRegressor...')
 reg_model = HistGradientBoostingRegressor(
     max_iter=300,
@@ -94,7 +94,7 @@ cls_model = XGBClassifier(
     n_jobs=-1,
 ).fit(X_cls, y_cls)
 
-# 6. Export Artifacts
+# Export Artifacts
 joblib.dump(reg_model, 'reg_model.joblib')
 joblib.dump(cls_model, 'cls_model.joblib')
 joblib.dump(X_reg.columns.tolist(), 'reg_columns.joblib')
